@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_load_first_image"
+        android:orderInCategory="1"
+        android:title="加载第一幅图"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_load_second_image"
+        android:orderInCategory="2"
+        android:title="加载第二幅图"
+        app:showAsAction="never"/>
+</menu>
