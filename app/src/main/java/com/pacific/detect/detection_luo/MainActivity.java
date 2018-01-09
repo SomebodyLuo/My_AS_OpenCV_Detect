@@ -1,12 +1,16 @@
 package com.pacific.detect.detection_luo;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -48,6 +52,7 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, callback
@@ -93,6 +98,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        viewGroup.addView(mBtnRecord);
 //        viewGroup.addView(mCameraPreview, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        requestCameraPermission();
+    }
+
+
+    @TargetApi(23)
+    private void requestCameraPermission()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
+            } else {
+            }
+        } else {
+
+        }
     }
 
 
