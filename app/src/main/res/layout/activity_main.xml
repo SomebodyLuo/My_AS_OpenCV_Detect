@@ -1,47 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/MainRelative"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" >-->
+    <!--</RelativeLayout>-->
 
-            <Button
-                android:id="@+id/btn_gray_process"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/str_proc" />
-
-            <Button
-                android:id="@+id/btn_open_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/str_open" />
-
-            <Button
-                android:id="@+id/btn_close_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/str_close" />
-
-        </LinearLayout>
-
-        <LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="horizontal" >
 
-        <ImageView
-            android:id="@+id/image_view"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_start_preview"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/str_desc"/>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/str_start_preview" />
 
+        <Button
+            android:id="@+id/btn_start_record"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/str_start_record" />
     </LinearLayout>
 
-</LinearLayout>
+    <com.pacific.detect.detection_luo.CameraPreview
+        android:id="@+id/preview"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="0.85" />
 
+</LinearLayout>

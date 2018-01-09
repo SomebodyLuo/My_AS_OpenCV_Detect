@@ -3,8 +3,7 @@
     <string name="app_name">GrayProcess</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="str_proc">gray process</string>
     <string name="str_desc">image description</string>
-    <string name="str_open">Open</string>
-    <string name="str_close">Close</string>
+    <string name="str_start_preview">Open</string>
+    <string name="str_start_record">Record</string>
 </resources>

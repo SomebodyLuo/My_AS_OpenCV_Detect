@@ -4,9 +4,6 @@ package com.pacific.detect.detection_luo;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import luo.uvc.jni.ImageProc.FrameInfo;
-import android.R.bool;
-import android.R.string;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,9 +16,25 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.Scalar;
+import org.opencv.features2d.DMatch;
+import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.DescriptorMatcher;
+import org.opencv.features2d.FeatureDetector;
+import org.opencv.features2d.Features2d;
+import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.highgui.VideoCapture;
+
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Runnable
 {
-	public static final String TAG = "UVCCameraPreview";
+	public static final String TAG = "luoyouren";
 	protected Context context;
 
 	private SurfaceHolder holder;
@@ -43,44 +56,64 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	private int dw, dh;
 	private float rate;
 
+	// opencv camera
+	private VideoCapture capture = null;
+
 	public CameraPreview(Context context)
 	{
 		super(context);
 		// TODO Auto-generated constructor stub
 		this.context = context;
-		Log.d(TAG, "CameraPreview constructed");
+		Log.d(TAG, "CameraPreview constructed 1");
 		setFocusable(true);
 
 		holder = getHolder();
 		holder.addCallback(this);
-		holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
+//		holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
 
 	}
 
-	//ע�⣺ʹ��findViewById��ȡCameraPreview�������������캯��
 	public CameraPreview(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 		this.context = context;
-		Log.d(TAG, "CameraPreview constructed");
+		Log.d(TAG, "CameraPreview constructed 2");
 		setFocusable(true);
 
 		holder = getHolder();
 		holder.addCallback(this);
-		holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
+//		holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
 		
-	}	
+	}
+
+	public CameraPreview(Context context, AttributeSet attrs, int defStyle)
+	{
+		super(context, attrs, defStyle);
+
+		this.context = context;
+		Log.d(TAG, "CameraPreview constructed 3");
+		setFocusable(true);
+
+		holder = getHolder();
+		holder.addCallback(this);
+//		holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
+	}
+
+	public void setVideoCapture(VideoCapture videoCapture)
+	{
+		capture = videoCapture;
+	}
 
 	public void initPreview()
 	{
-		int index = -1;
+		int index = 0;
 		if (mIsOpened == false)
 		{
-			if (0 == ImageProc.connectCamera(index))
+			if (true == capture.open(index))
 			{
-				Log.i(TAG, "open uvc success!!!");
+				Log.i(TAG, "open camera success!!!");
 				mIsOpened = true;
-				textCallback.setViewText(SET_PREVIEW_TEXT, "�ر�");
+				textCallback.setViewText(SET_PREVIEW_TEXT, "Close");
 				if (null != mainLoop)
 				{
 					shouldStop = false;
@@ -88,12 +121,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 					mainLoop.start();
 				}
 
-				Toast.makeText(context.getApplicationContext(), "�ɹ�������ͷ", Toast.LENGTH_SHORT).show();
-			} else
-			{
-				Log.i(TAG, "open uvc fail!!!");
+				Toast.makeText(context.getApplicationContext(), "成功打开摄像头", Toast.LENGTH_SHORT).show();
+			} else {
+				Log.i(TAG, "open camera fail!!!");
 				mIsOpened = false;
-				Toast.makeText(context.getApplicationContext(), "����ͷ��ʧ��", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context.getApplicationContext(), "摄像头打开失败", Toast.LENGTH_SHORT).show();
 			}
 
 		} else
@@ -104,10 +136,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 	public void uninitPreview()
 	{
-		//����¼��
 		uninitRecord();
 		
-		//ֹͣԤ���߳�
 		if (null != mainLoop)
 		{
 			Log.i(TAG, mainLoop.isAlive() ? "mainloop is alive!" : "mainloop is not alive!");
@@ -126,69 +156,68 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			}
 		}
 
-		//�ر�camera
 		if (mIsOpened)
 		{
 			mIsOpened = false;
-			ImageProc.releaseCamera();
-			textCallback.setViewText(SET_PREVIEW_TEXT, "��");
+			capture.release();
+			textCallback.setViewText(SET_PREVIEW_TEXT, "Open");
 			Log.i(TAG, "release camera...");
 		}
 	}
 	
 	public void initRecord()
 	{
-		if(mIsOpened)
-		{
-			if(mIsRecording == false)
-			{
-				Log.i(TAG, "init camera record!");
-				Date date = new Date();
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");				
-				String dateString = simpleDateFormat.format(date);
-				if(null == dateString)
-				{
-					dateString = "luoyouren";
-				}
-				Log.i(TAG, dateString);
-				
-				if(0 == ImageProc.startRecord(dateString))
-				{
-					mIsRecording = true;
-					textCallback.setViewText(SET_RECORD_TEXT, "ֹͣ");
-					Toast.makeText(context.getApplicationContext(), "��ʼ¼��...", Toast.LENGTH_SHORT).show();
-				}
-				else 
-				{
-					mIsRecording = false;
-					Log.e(TAG, "init camera record failed!");
-					Toast.makeText(context.getApplicationContext(), "¼������ʧ�ܣ�", Toast.LENGTH_SHORT).show();
-				}
-				return;
-			}
-			else 
-			{
-				uninitRecord();
-				return;
-			}
-		}
-		else 
-		{
-			Log.e(TAG, "camera has not been opened!");
-			return;
-		}
+//		if(mIsOpened)
+//		{
+//			if(mIsRecording == false)
+//			{
+//				Log.i(TAG, "init camera record!");
+//				Date date = new Date();
+//				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//				String dateString = simpleDateFormat.format(date);
+//				if(null == dateString)
+//				{
+//					dateString = "luoyouren";
+//				}
+//				Log.i(TAG, dateString);
+//
+//				if(0 == ImageProc.startRecord(dateString))
+//				{
+//					mIsRecording = true;
+//					textCallback.setViewText(SET_RECORD_TEXT, "ֹͣ");
+//					Toast.makeText(context.getApplicationContext(), "��ʼ¼��...", Toast.LENGTH_SHORT).show();
+//				}
+//				else
+//				{
+//					mIsRecording = false;
+//					Log.e(TAG, "init camera record failed!");
+//					Toast.makeText(context.getApplicationContext(), "¼������ʧ�ܣ�", Toast.LENGTH_SHORT).show();
+//				}
+//				return;
+//			}
+//			else
+//			{
+//				uninitRecord();
+//				return;
+//			}
+//		}
+//		else
+//		{
+//			Log.e(TAG, "camera has not been opened!");
+//			return;
+//		}
 	}
 	
 	public void uninitRecord()
 	{
-		if(mIsRecording)
-		{
-			Log.i(TAG, "camera is already recording! So we stop it.");
-			ImageProc.stopRecord();
-			mIsRecording = false;
-			textCallback.setViewText(SET_RECORD_TEXT, "¼��");
-			return;
-		}
+//		if(mIsRecording)
+//		{
+//			Log.i(TAG, "camera is already recording! So we stop it.");
+//			ImageProc.stopRecord();
+//			mIsRecording = false;
+//			textCallback.setViewText(SET_RECORD_TEXT, "¼��");
+//			return;
+//		}
 	}
 
 	public boolean isOpen()
@@ -208,24 +237,27 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		while (true && mIsOpened)
 		{
 			// get camera frame
-			FrameInfo frame = ImageProc.getFrame();
-			if (null == frame)
+			Mat frame = new Mat();
+
+			if (false == capture.read(frame))
 			{
 				continue;
 			}
 
-			int w = frame.getWidth();
-			int h = frame.getHeigth();
+			int w = frame.cols();
+			int h = frame.rows();
 			Log.i(TAG, "frame.width = " + w + " frame.height = " + h);
-			// ����ͼ���С������ʾ�����С
-			// һ����˵ͼ���С����仯: 640x480
+
 			updateRect(w, h);
 
+			// 转换格式
+			//RGB --> ARGB8888
+			Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2RGBA);
+
 			Bitmap resultImg = Bitmap.createBitmap(w, h, Config.ARGB_8888);
+			Utils.matToBitmap(frame, resultImg);
 
-			resultImg.setPixels(frame.getPixels(), 0, w, 0, 0, w, h);
-
-			// ˢsurfaceview��ʾ
+			// 刷新显示
 			Canvas canvas = getHolder().lockCanvas();
 			if (canvas != null)
 			{
@@ -284,10 +316,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		mainLoop = new Thread(this);
 		
 		updateRect(512, 512);
-		// ��lenaͼ����س����в�������ʾ
 		Bitmap resultImg = BitmapFactory.decodeResource(getResources(), R.drawable.lena);
 
-		// ˢsurfaceview��ʾ
 		Canvas canvas = getHolder().lockCanvas();
 		if (canvas != null)
 		{
