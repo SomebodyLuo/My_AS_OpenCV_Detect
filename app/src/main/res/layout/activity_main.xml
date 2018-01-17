@@ -1,41 +1,38 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <!--<RelativeLayout-->
-        <!--android:id="@+id/MainRelative"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" >-->
-    <!--</RelativeLayout>-->
+    <ImageView
+        android:id="@+id/iv_Image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_Object1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:text="666"/>
 
-        <Button
-            android:id="@+id/btn_start_preview"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/str_start_preview" />
+    <TextView
+        android:id="@+id/tv_Object2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="444"/>
 
-        <Button
-            android:id="@+id/btn_start_record"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/str_start_record" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_Matches"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="777"/>
 
-    <com.pacific.detect.detection_luo.CameraPreview
-        android:id="@+id/preview"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.85" />
-
+    <TextView
+        android:id="@+id/tv_Time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="333"/>
 </LinearLayout>
+
